@@ -8,7 +8,7 @@ class WebsiteController < ApplicationController
   def donate
     charity = Charity.find_by id: params[:charity]
     omise_token = params[:omise_token]
-    amount = params[:amount].try(:to_i)
+    amount = params[:amount].try(:to_f).try(:round, Charity::PRECISION_LIMIT)
 
     if omise_token
       @token = retrieve_token omise_token
@@ -34,7 +34,7 @@ class WebsiteController < ApplicationController
   private
 
   def valid_amount? amount
-    amount && amount > 20
+    amount && amount > Charity::MINIMUM_TOTAL_AMOUNT
   end
 
   def render_error

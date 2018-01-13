@@ -19,12 +19,12 @@ module PaymentHelper
   def make_payment amount, omise_token, charity
     if Rails.env.test?
       OpenStruct.new({
-        amount: params[:amount].to_i * 100,
-        paid: (params[:amount].to_i != 999),
+        amount: (amount * 100).round,
+        paid: (amount != 999),
       })
     else
       Omise::Charge.create({
-        amount: amount * 100,
+        amount: (amount * 100).round,
         currency: "THB",
         card: omise_token,
         description: "Donation to #{charity.name} [#{charity.id}]",
