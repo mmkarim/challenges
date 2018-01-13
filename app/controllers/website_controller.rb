@@ -6,7 +6,7 @@ class WebsiteController < ApplicationController
   end
 
   def donate
-    charity = Charity.find_by id: params[:charity]
+    charity = find_charity
     omise_token = params[:omise_token]
     amount = params[:amount].try(:to_f).try(:round, Charity::PRECISION_LIMIT)
 
@@ -44,6 +44,19 @@ class WebsiteController < ApplicationController
 
   def render_success
     flash.notice = t(".success")
-    redirect_to root_path
+    if params[:charity] == "random"
+      render :index
+    else
+      redirect_to root_path
+    end
+
+  end
+
+  def find_charity
+    if params[:charity] == "random"
+      Charity.offset(rand(Charity.count)).first
+    else
+      Charity.find_by id: params[:charity]
+    end
   end
 end
